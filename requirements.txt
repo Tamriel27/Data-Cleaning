@@ -1,7 +1,7 @@
-streamlit==1.13.0
-pandas==1.2.5
-numpy==1.13.0
-xlrd==1.2.5
-openpyxl==3.0.10
+streamlit
+pandas
+numpy
+xlrd
+openpyxl
 XlsxWriter
 bytesbufio
