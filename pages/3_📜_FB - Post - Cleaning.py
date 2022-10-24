@@ -21,7 +21,7 @@ def merge_files3(merge_files2, video):
     return pd.merge(merge_files2, video, on='Permalink', how='left')
 
 def merge_files4(merge_files3, master_data):
-    return pd.merge(merge_files3, master_data, how='left', left_on='Campaign Name', right_on='#Hashtag')
+    return pd.merge(merge_files3, master_data, how='left', left_on='Campaign Hashtag', right_on='#Hashtag')
 
 def to_excel(df):
         output = BytesIO()
@@ -88,7 +88,7 @@ if uploaded_file2 is not None:
     master_data = pd.read_excel(uploaded_file2, sheet_name='MasterData', skiprows=[0])
 
     #Sorting columns
-    master_data = master_data[['#Hashtag', 'Budget code', 'Page', 'Year']]
+    master_data = master_data[['Campaign name', '#Hashtag', 'Budget code', 'Page', 'Year']]
     #Preview
     st.subheader('Master Data Preview:')
     st.dataframe(master_data.head())
@@ -114,12 +114,13 @@ if st.button('Badum Tss'):
         df_merge1 = merge_files1(key_metrics, act)
         df_merge2 = merge_files2(df_merge1, cons)
         df_merge3 = merge_files3(df_merge2, video)
-        df_merge3['Campaign'] = key_metrics['Post Message'].str.findall(r'#.*?(?=\s|$)')
-        df_merge3['Campaign'] = [', '.join(i) if isinstance(i, list) else i for i in df_merge3['Campaign']]
+        df_merge3['Hashtags'] = key_metrics['Post Message'].str.findall(r'#.*?(?=\s|$)')
+        df_merge3['Hashtags'] = [', '.join(i) if isinstance(i, list) else i for i in df_merge3['Hashtags']]
         target = master_data['#Hashtag'].values.tolist()
-        df_merge3['Campaign Name'] = df_merge3['Campaign'].apply(lambda x: listing_splitter(x, target))
-        df_merge3['Campaign Name'] = [','.join(i) if isinstance(i, list) else i for i in df_merge3['Campaign Name']]
+        df_merge3['Campaign Hashtag'] = df_merge3['Hashtags'].apply(lambda x: listing_splitter(x, target))
+        df_merge3['Campaign Hashtag'] = [','.join(i) if isinstance(i, list) else i for i in df_merge3['Campaign Hashtag']]
         df = merge_files4(df_merge3, master_data)
+        df.drop(['Campaign Hashtag', 'Hashtags'], axis=1, inplace=True)
         df_xlsx = to_excel(df)
         st.download_button(label='📥 Get me the data!',
                                     data=df_xlsx ,
