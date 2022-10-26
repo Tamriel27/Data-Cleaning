@@ -11,17 +11,11 @@ Upload your files
 """
 )
 
-def merge_files1(key_metrics, act):
-    return pd.merge(key_metrics, act, on='Permalink', how='left')
+def merge_files(data1, data2):
+    return pd.merge(data1, data2, on='Permalink', how='left')
 
-def merge_files2(merge_files1, cons):
-    return pd.merge(merge_files1, cons, on='Permalink', how='left')
-
-def merge_files3(merge_files2, video):
-    return pd.merge(merge_files2, video, on='Permalink', how='left')
-
-def merge_files4(merge_files3, master_data):
-    return pd.merge(merge_files3, master_data, how='left', left_on='Campaign Hashtag', right_on='#Hashtag')
+def merge_files1(data1, data2):
+    return pd.merge(data1, data2, how='left', left_on='Campaign Hashtag', right_on='#Hashtag')
 
 def to_excel(df):
         output = BytesIO()
@@ -109,17 +103,17 @@ if uploaded_file3 is not None:
     st.subheader('Video Data Preview:')
     st.dataframe(video.head())
 
-if st.button('Badum Tss'):
+if st.button('Ba-dum Tss'):
     if (uploaded_file1 is not None) & (uploaded_file2 is not None) & (uploaded_file3 is not None):
-        df_merge1 = merge_files1(key_metrics, act)
-        df_merge2 = merge_files2(df_merge1, cons)
-        df_merge3 = merge_files3(df_merge2, video)
+        df_merge1 = merge_files(key_metrics, act)
+        df_merge2 = merge_files(df_merge1, cons)
+        df_merge3 = merge_files(df_merge2, video)
         df_merge3['Hashtags'] = key_metrics['Post Message'].str.findall(r'#.*?(?=\s|$)')
         df_merge3['Hashtags'] = [', '.join(i) if isinstance(i, list) else i for i in df_merge3['Hashtags']]
         target = master_data['#Hashtag'].values.tolist()
         df_merge3['Campaign Hashtag'] = df_merge3['Hashtags'].apply(lambda x: listing_splitter(x, target))
         df_merge3['Campaign Hashtag'] = [','.join(i) if isinstance(i, list) else i for i in df_merge3['Campaign Hashtag']]
-        df = merge_files4(df_merge3, master_data)
+        df = merge_files1(df_merge3, master_data)
         df.drop(['Campaign Hashtag', 'Hashtags'], axis=1, inplace=True)
         df_xlsx = to_excel(df)
         st.download_button(label='📥 Get me the data!',
