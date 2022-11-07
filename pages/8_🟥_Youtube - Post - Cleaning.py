@@ -50,6 +50,7 @@ def main_loop():
     df.rename({'Page': 'Brand'}, axis=1, inplace=True)
     df = df[['Permalink', 'Post Message', 'Posted', 'Total Impressions', 
          'Like', 'Votes', 'Campaign Name', 'Budget code', 'Year', 'Brand']]
+    df['Posted'] = pd.to_datetime(df['Posted'])
     
     df_xlsx = to_excel(df)
     st.download_button(label='📥 Download Result',
