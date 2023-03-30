@@ -86,12 +86,12 @@ if uploaded_file2 is not None:
 
 if st.button('Ba-dum Tss'):
     if (uploaded_file1 is not None) & (uploaded_file2 is not None):
-        df_merge['Hashtags'] = key_metrics['Description'].str.findall(r'#.*?(?=\s|$)')
-        df_merge['Hashtags'] = [', '.join(i) if isinstance(i, list) else i for i in df_merge['Hashtags']]
+        key_metrics['Hashtags'] = key_metrics['Description'].str.findall(r'#.*?(?=\s|$)')
+        key_metrics['Hashtags'] = [', '.join(i) if isinstance(i, list) else i for i in key_metrics['Hashtags']]
         target = master_data['#Hashtag'].values.tolist()
-        df_merge['Campaign Hashtag'] = df_merge['Hashtags'].apply(lambda x: listing_splitter(x, target))
-        df_merge['Campaign Hashtag'] = [','.join(i) if isinstance(i, list) else i for i in df_merge['Campaign Hashtag']]
-        df = merge_files1(df_merge, master_data)
+        key_metrics['Campaign Hashtag'] = key_metrics['Hashtags'].apply(lambda x: listing_splitter(x, target))
+        key_metrics['Campaign Hashtag'] = [','.join(i) if isinstance(i, list) else i for i in key_metrics['Campaign Hashtag']]
+        df = merge_files(key_metrics, master_data)
         df.drop(['Campaign Hashtag', 'Hashtags'], axis=1, inplace=True)
         df_xlsx = to_excel(df)
         st.download_button(label='📥 Get me the data!',
